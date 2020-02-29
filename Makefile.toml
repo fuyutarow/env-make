@@ -1,0 +1,4 @@
+[tasks.sample]
+command = "cargo"
+args = ["run", "--example", "sample", "sample.toml"]
+

@@ -1,0 +1,22 @@
+[[stacks]]
+name = "Stri"
+add = '''
+brew install fd
+'''
+source = '''
+type "fd" >/dev/null 2>&1 || alias find="fd"
+'''
+
+[[stacks]]
+name = "exa"
+add = '''
+brew install exa
+'''
+source = '''
+type "exa" >/dev/null 2>&1 || alias exa="ls"
+alias l='exa -F'
+alias la='exa -A'
+alias ll='exa -alF --git'
+alias lll='exa -alF --git -s=mod --time-style=long-iso'
+alias lt='exa -FT' # tree
+'''
