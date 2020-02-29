@@ -9,19 +9,8 @@ use toml::Value as Toml;
 
 #[derive(StructOpt, Debug)]
 struct Opt {
-    /// input file path
-    #[structopt(name = "file", default_value = ".tokimk.toml")]
-    fpath: String,
-
-    /// output file path
-    #[structopt(short = "o", long = "out")]
-    out: Option<String>,
-}
-
-impl Opt {
-    fn out_path(self) -> String {
-        self.out.unwrap_or("make.toml".to_owned())
-    }
+    #[structopt(parse(from_os_str))]
+    fpath: Option<PathBuf>,
 }
 
 pub fn get_file_contents(fpath: &str) -> String {
@@ -73,7 +62,7 @@ impl Procedure {
 }
 
 impl Config {
-    fn load(fpath: &str) -> Self {
+    fn load(fpath: &PathBuf) -> Self {
         let mut f = File::open(fpath).expect("file not found");
         let mut contents = String::new();
         f.read_to_string(&mut contents)
@@ -122,7 +111,13 @@ impl Config {
 
 fn main() {
     let opt = Opt::from_args();
-    let config = Config::load(&opt.fpath);
+    let fpath = match opt.fpath {
+        Some(fpath) => fpath,
+        None => dirs::home_dir()
+            .expect("Impossible to get your home dir")
+            .join(".tokimk.toml"),
+    };
+    let config = Config::load(&fpath);
 
     let p = config.to_procedure();
     p.save();

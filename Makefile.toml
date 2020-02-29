@@ -1,4 +1,13 @@
-[tasks.sample]
-command = "cargo"
-args = ["run", "--example", "sample", "sample.toml"]
+[tasks.hot]
+run_task = { name = ["build", "move-bin"] }
 
+[tasks.move-bin]
+script = [
+'''
+cp ./target/release/tokimk ./bin/
+'''
+]
+
+[tasks.build]
+command = "cargo"
+args = ["build", "--release"]

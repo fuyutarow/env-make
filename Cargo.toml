@@ -1,6 +1,6 @@
 [package]
 name = "tokimk"
-version = "0.202002.0"
+version = "0.202002.1"
 authors = ["fuyutarow <fuyutarow@gmail.com>"]
 edition = "2018"
 

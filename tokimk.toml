@@ -1,0 +1,69 @@
+[[stacks]]
+name = "env"
+source = '''
+#!/usr/bin/env bash
+'''
+
+[[stacks]]
+name = "git"
+add = '''
+brew install git
+'''
+source = '''
+alias g='git'
+'''
+
+[[stacks]]
+name = "ls"
+add = '''
+brew install exa
+'''
+source = '''
+type "exa" >/dev/null 2>&1 || alias exa="ls"
+alias l='exa -F'
+alias la='exa -A'
+alias ll='exa -alF --git'
+alias llr='ll -r'
+alias lll='exa -alF --git -s=mod --time-style=long-iso'
+alias lllr='lll -r'
+# alias lll='ll --sort=time'
+alias lt='exa -FT' # tree
+# alias lt='exa --tree'
+'''
+
+[[stacks]]
+name = "cat"
+add = '''
+brew install bat
+'''
+source = '''
+type "bat" >/dev/null 2>&1 || alias bat="cat"
+alias p='bat'
+'''
+
+[[stacks]]
+name = "find"
+add = '''
+brew install fd
+'''
+source = '''
+type "fd" >/dev/null 2>&1 || alias find="fd"
+'''
+
+[[stacks]]
+name = "grep"
+add = '''
+brew install ripgrep
+'''
+source = '''
+type "ripgrep" >/dev/null 2>&1 || alias ripgrep="grep"
+alias gr='ripgrep'
+alias grr='ripgrep -r'
+alias gv='ripgrep -v'
+alias gl='ripgrep -ilr'
+
+grl() {
+  ripgrep "$@" -rl .
+}
+'''
+
