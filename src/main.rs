@@ -1,6 +1,9 @@
+use dirs;
 use serde_derive::{Deserialize, Serialize};
+use std::fs;
 use std::fs::File;
 use std::io::prelude::*;
+use std::path::{Path, PathBuf};
 use structopt::StructOpt;
 use toml::Value as Toml;
 
@@ -56,10 +59,15 @@ pub struct Procedure {
 
 impl Procedure {
     pub fn save(self) {
-        let mut file = File::create("script_add.sh").unwrap();
+        let build_dir = dirs::home_dir()
+            .expect("Impossible to get your home dir")
+            .join(".config/tokimk/build");
+        fs::create_dir_all(&build_dir).unwrap();
+
+        let mut file = File::create(build_dir.join("script_add.sh")).unwrap();
         writeln!(&mut file, "{}", &self.script_add).unwrap();
 
-        let mut file = File::create("script_source.sh").unwrap();
+        let mut file = File::create(build_dir.join("script_source.sh")).unwrap();
         writeln!(&mut file, "{}", &self.script_source).unwrap();
     }
 }
