@@ -1,6 +1,6 @@
 [package]
 name = "env-make"
-version = "0.202105.2"
+version = "0.202105.3"
 authors = ["fuyutarow"]
 edition = "2018"
 
@@ -12,6 +12,8 @@ path = 'src/lib/mod.rs'
 anyhow = "1.0.40"
 dirs = "3.0.2"
 indexmap = { version = "1.6.2", features = ["serde"] }
+parse-display = "0.4.1"
 serde = "1.0.125"
 serde_derive = "1.0.125"
+structopt = "0.3.21"
 toml = "0.5.8"
