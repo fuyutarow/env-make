@@ -1,13 +1,20 @@
 [tasks.hot]
-run_task = { name = ["build", "move-bin"] }
+run_task = {name = ["build", "move-bin", "local-install"]}
 
 [tasks.move-bin]
 script = [
-'''
-cp ./target/release/tokimk ./bin/
-'''
+  '''
+cp ./target/release/rcmk ./bin/
+''',
 ]
 
 [tasks.build]
-command = "cargo"
 args = ["build", "--release"]
+command = "cargo"
+
+[tasks.local-install]
+script = [
+  '''
+cp ./target/release/rcmk ~/.local/bin/
+''',
+]

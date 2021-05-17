@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 use structopt::StructOpt;
 use toml::Value as Toml;
+use std::env;
 
 #[derive(StructOpt, Debug)]
 struct Opt {
@@ -48,15 +49,18 @@ pub struct Procedure {
 
 impl Procedure {
     pub fn save(self) {
-        let build_dir = dirs::home_dir()
-            .expect("Impossible to get your home dir")
-            .join(".config/tokimk/build");
-        fs::create_dir_all(&build_dir).unwrap();
+        // let build_dir = dirs::config_dir()
+        // let build_dir = dirs::home_dir()
+        //     .expect("Impossible to get your home dir")
+        //     .join(".config/tokimk/build");
+        // let build_dir = "".to_string();
+        // fs::create_dir_all(&build_dir).unwrap();
 
-        let mut file = File::create(build_dir.join("script_add.sh")).unwrap();
+        let path = env::current_dir().expect("error");
+        let mut file = File::create(path.join("script_add.sh")).unwrap();
         writeln!(&mut file, "{}", &self.script_add).unwrap();
 
-        let mut file = File::create(build_dir.join("script_source.sh")).unwrap();
+        let mut file = File::create(path.join("script_source.sh")).unwrap();
         writeln!(&mut file, "{}", &self.script_source).unwrap();
     }
 }

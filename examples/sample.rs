@@ -3,6 +3,7 @@ use std::fs::File;
 use std::io::prelude::*;
 use structopt::StructOpt;
 use toml::Value as Toml;
+use std::env;
 
 #[derive(StructOpt, Debug)]
 struct Opt {
