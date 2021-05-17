@@ -21,7 +21,32 @@ impl Alias {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Config {
+    pub path: Vec<String>,
     pub aliases: Vec<Alias>,
+    pub env: HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct NuConfig {
+    pub startup: Vec<String>,
+    pub path: Vec<String>,
+    pub env: HashMap<String, String>,
+}
+
+impl From<Config> for NuConfig {
+    fn from(config: Config) -> Self {
+        let startup = config
+            .aliases
+            .into_iter()
+            .map(|alias| format!("alias {} = {}", alias.name, alias.body))
+            .collect::<Vec<String>>();
+
+        Self {
+            startup,
+            env: config.env,
+            path: config.path,
+        }
+    }
 }
 
 impl Config {
@@ -34,26 +59,21 @@ impl Config {
         }
         lines.push(String::from("]"));
 
+        // "{home_dir}/.linuxbrew/bin",
+        // "{home_dir}/.linuxbrew/sbin",
+
         lines.push(format!(
             r##"
 path = [
-"{home_dir}/.linuxbrew/bin",
-"{home_dir}/.linuxbrew/sbin",
+"$HOMEBREW_PREFIX/bin",
+"$HOMEBREW_PREFIX/sbin",
 ]
-
-[env]
-HOMEBREW_PREFIX = "{home_dir}/.linuxbrew"
-HOMEBREW_CELLAR = "{home_dir}/.linuxbrew/Cellar"
-HOMEBREW_REPOSITORY = "{home_dir}/.linuxbrew/Homebrew"
-# PATH = {home_dir}/.linuxbrew/bin:{home_dir}/.linuxbrew/sbin${{PATH+:$PATH}}"
-MANPATH = "{home_dir}/.linuxbrew/share/man${{MANPATH+:$MANPATH}}:"
-INFOPATH = "{home_dir}/.linuxbrew/share/info:${{INFOPATH:-}}"
 "##,
-            home_dir = dirs::home_dir()
-                .unwrap()
-                .into_os_string()
-                .into_string()
-                .unwrap()
+            // home_dir = dirs::home_dir()
+            //     .unwrap()
+            //     .into_os_string()
+            //     .into_string()
+            //     .unwrap()
         ));
         Ok(lines)
     }
@@ -75,17 +95,6 @@ INFOPATH = "{home_dir}/.linuxbrew/share/info:${{INFOPATH:-}}"
         let s = lines.join("\n");
         std::fs::write(&fpath, s)?;
         Ok(fpath)
-    }
-}
-
-impl From<RawConfig> for Config {
-    fn from(raw_config: RawConfig) -> Self {
-        let aliases = raw_config
-            .alias
-            .into_iter()
-            .map(|(name, body)| Alias { name, body })
-            .collect::<Vec<Alias>>();
-        Self { aliases }
     }
 }
 
