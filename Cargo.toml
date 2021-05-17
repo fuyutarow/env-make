@@ -1,10 +1,12 @@
 [package]
-name = "rc-make"
-version = "0.1.0"
+name = "env-make"
+version = "0.202105.2"
 authors = ["fuyutarow"]
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = 'cli'
+path = 'src/lib/mod.rs'
 
 [dependencies]
 anyhow = "1.0.40"
@@ -13,7 +15,3 @@ indexmap = { version = "1.6.2", features = ["serde"] }
 serde = "1.0.125"
 serde_derive = "1.0.125"
 toml = "0.5.8"
-
-[lib]
-name = 'cli'
-path = 'src/lib/mod.rs'

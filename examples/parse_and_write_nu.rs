@@ -1,17 +1,17 @@
-use cli::{Config, RawConfig};
-use serde_derive::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::io::prelude::*;
+use cli::Config;
+use cli::NuConfig;
+use cli::RawConfig;
 
-fn main() -> anyhow::Result<()> {
-    let fpath = "examples/aliases.toml";
+fn main() {
+    let fpath = "examples/env.toml";
+    let content = std::fs::read_to_string(fpath).expect("Unable to read file");
+    let raw = toml::from_str::<RawConfig>(&content).expect("Failed to parse as toml");
+    dbg!(&raw);
 
-    let mut f = std::fs::File::open(fpath).expect("file not found");
-    let mut contents = String::new();
-    f.read_to_string(&mut contents)
-        .expect("something went wrong reading the file");
-    let raw_config = toml::from_str::<RawConfig>(&contents).expect("failed to parse config file");
-    let config = Config::from(raw_config);
-    config.write_nu()?;
-    Ok(())
+    let config = Config::from(raw);
+    dbg!(&config);
+
+    let nu = NuConfig::from(config);
+    dbg!(&nu);
+    nu.write();
 }

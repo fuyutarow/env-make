@@ -1,8 +1,0 @@
-[alias]
-',' = 'cd'
-g = 'git'
-p = 'cat'
-l = 'ls -l'
-d = 'docker'
-o = 'open'
-vi = 'neovim'
