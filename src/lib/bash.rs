@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use indexmap::IndexMap;
 use serde_derive::{Deserialize, Serialize};
 
-use crate::Config;
+use crate::{Config, ShConfig};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct BashConfig {
@@ -25,7 +25,7 @@ impl From<Config> for BashConfig {
 }
 
 impl BashConfig {
-    pub fn to_string(&self) -> anyhow::Result<(String)> {
+    fn to_string(&self) -> anyhow::Result<(String)> {
         let mut s = String::new();
         for (k, v) in self.env.iter() {
             writeln!(&mut s, r#"export {}="{}""#, k, v)?;
@@ -44,14 +44,16 @@ impl BashConfig {
 
         Ok(s)
     }
+}
 
-    pub fn print(&self) -> anyhow::Result<()> {
+impl ShConfig for BashConfig {
+    fn print(&self) -> anyhow::Result<()> {
         let s = self.to_string()?;
         println!("{}", s);
         Ok(())
     }
 
-    pub fn write(&self, fpath: PathBuf) -> anyhow::Result<()> {
+    fn write(&self, fpath: PathBuf) -> anyhow::Result<()> {
         let content = self.to_string()?;
         match std::fs::write(&fpath, content) {
             Ok(_) => println!(

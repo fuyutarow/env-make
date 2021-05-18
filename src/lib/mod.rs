@@ -1,5 +1,13 @@
+use std::path::PathBuf;
+
 use indexmap::IndexMap;
 use serde_derive::{Deserialize, Serialize};
+
+pub trait ShConfig {
+    fn print(&self) -> anyhow::Result<()>;
+
+    fn write(&self, fpath: PathBuf) -> anyhow::Result<()>;
+}
 
 mod bash;
 pub use bash::BashConfig;

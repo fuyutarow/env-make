@@ -1,7 +1,8 @@
 use indexmap::IndexMap;
 use serde_derive::{Deserialize, Serialize};
+use std::path::PathBuf;
 
-use crate::Config;
+use crate::{Config, ShConfig};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct NuConfig {
@@ -44,30 +45,22 @@ impl From<Config> for NuConfig {
     }
 }
 
-impl NuConfig {
-    pub fn print(&self) {
-        match toml::to_string(&self) {
-            Ok(toml) => {
-                println!("{}", toml);
-            }
-            Err(err) => {
-                eprintln!("{}", err)
-            }
-        };
+impl ShConfig for NuConfig {
+    fn print(&self) -> anyhow::Result<()> {
+        let content = toml::to_string(&self)?;
+        println!("{}", content);
+        Ok(())
     }
 
-    pub fn write(&self) {
-        let nu_config_fpath = dirs::config_dir()
-            .expect("expected file path")
-            .join("nu/config.toml");
-        if let Ok(toml) = toml::to_string(&self) {
-            match std::fs::write(&nu_config_fpath, toml) {
-                Ok(_) => println!(
-                    "{} was updated",
-                    nu_config_fpath.into_os_string().into_string().unwrap()
-                ),
-                Err(err) => eprintln!("{}", err),
-            }
-        };
+    fn write(&self, fpath: PathBuf) -> anyhow::Result<()> {
+        let content = toml::to_string(&self)?;
+        match std::fs::write(&fpath, content) {
+            Ok(_) => println!(
+                "{} was updated",
+                fpath.into_os_string().into_string().unwrap()
+            ),
+            Err(err) => eprintln!("{}", err),
+        }
+        Ok(())
     }
 }

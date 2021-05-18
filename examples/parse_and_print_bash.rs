@@ -1,6 +1,7 @@
 use cli::BashConfig;
 use cli::Config;
 use cli::RawConfig;
+use cli::ShConfig;
 
 fn main() {
     let fpath = "examples/env.toml";
