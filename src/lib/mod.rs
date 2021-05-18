@@ -1,10 +1,8 @@
-// use std::collections::HashMap;
-// use std::fmt::Write as FmtWrite;
-// use std::io::Write as IoWrite;
-
 use indexmap::IndexMap;
 use serde_derive::{Deserialize, Serialize};
 
+mod bash;
+pub use bash::BashConfig;
 mod nushell;
 pub use nushell::NuConfig;
 
