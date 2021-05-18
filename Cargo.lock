@@ -69,6 +69,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "crossbeam-utils"
+version = "0.8.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4feb231f0d4d6af81aed15928e58ecf5816aa62a2393e2c82f46973e92a9a278"
+dependencies = [
+ "autocfg",
+ "cfg-if",
+ "lazy_static",
+]
+
+[[package]]
 name = "dirs"
 version = "3.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -99,6 +110,7 @@ name = "env-make"
 version = "0.202105.5"
 dependencies = [
  "anyhow",
+ "crossbeam-utils",
  "dirs",
  "indexmap",
  "parse-display",

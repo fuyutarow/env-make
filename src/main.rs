@@ -24,7 +24,7 @@ enum Opt {
         #[structopt(short, long, default_value = "nu")]
         to: To,
 
-        /// [possible values: midi, json]
+        ///
         #[structopt(short, long)]
         replace: bool,
     },
@@ -37,6 +37,10 @@ enum Opt {
         /// target config file
         #[structopt(parse(from_os_str), short, long = "file")]
         fpath: PathBuf,
+
+        ///
+        #[structopt(short, long)]
+        background: bool,
     },
 }
 
@@ -57,11 +61,20 @@ fn main() {
                 sh.print();
             }
         }
-        Opt::Install { name, fpath } => {
+        Opt::Install {
+            name,
+            fpath,
+            background,
+        } => {
             let content = std::fs::read_to_string(fpath).expect("Unable to read file");
             let raw = toml::from_str::<RawConfig>(&content).expect("Failed to parse as toml");
             let config = Config::from(raw);
-            config.install(&name)
+
+            if background {
+                config.install_bg(&name)
+            } else {
+                config.install(&name)
+            }
         }
     }
 }

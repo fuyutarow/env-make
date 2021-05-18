@@ -10,6 +10,7 @@ path = 'src/lib/mod.rs'
 
 [dependencies]
 anyhow = "1.0.40"
+crossbeam-utils = "0.8.4"
 dirs = "3.0.2"
 indexmap = { version = "1.6.2", features = ["serde"] }
 parse-display = "0.4.1"

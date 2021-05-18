@@ -73,6 +73,26 @@ impl Config {
             eprintln!("Not found {}", name)
         }
     }
+
+    pub fn install_bg(&self, name: &str) {
+        if let Some(command) = self.dependencies.get(name) {
+            if let Some((first, args)) = command
+                .split_whitespace()
+                .map(String::from)
+                .collect::<Vec<_>>()
+                .split_first()
+            {
+                let mut child = std::process::Command::new(&first)
+                    .args(args)
+                    .stdout(std::process::Stdio::null())
+                    .stderr(std::process::Stdio::null())
+                    .spawn()
+                    .expect(&format!("Failed to excuete {}", command));
+            }
+        } else {
+            eprintln!("Not found {}", name)
+        }
+    }
 }
 
 impl From<RawConfig> for Config {
