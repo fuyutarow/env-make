@@ -24,6 +24,7 @@ impl From<Config> for NuConfig {
             .into_os_string()
             .into_string()
             .unwrap();
+
         let env = config
             .env
             .into_iter()

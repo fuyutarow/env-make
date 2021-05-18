@@ -76,16 +76,24 @@ fn main() {
                     .join("nu/config.toml"),
             });
 
-            let sh = match to {
-                To::Bash | To::Zsh => BashConfig::from(config),
-                To::Nu => NuConfig::from(config),
+            match to {
+                To::Bash | To::Zsh => {
+                    let sh = BashConfig::from(config);
+                    if replace {
+                        sh.write(out);
+                    } else {
+                        sh.print();
+                    }
+                }
+                To::Nu => {
+                    let sh = NuConfig::from(config);
+                    if replace {
+                        sh.write(out);
+                    } else {
+                        sh.print();
+                    }
+                }
             };
-
-            if replace {
-                sh.write(out);
-            } else {
-                sh.print();
-            }
         }
         Opt::Install {
             name,
