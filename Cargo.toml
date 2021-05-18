@@ -1,6 +1,6 @@
 [package]
 name = "env-make"
-version = "0.202105.4"
+version = "0.202105.5"
 authors = ["fuyutarow"]
 edition = "2018"
 

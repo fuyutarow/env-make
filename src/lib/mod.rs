@@ -16,11 +16,18 @@ pub enum AliasBody {
     },
 }
 
+// #[derive(Debug, Clone, Deserialize, Serialize)]
+// #[serde(untagged)]
+// pub enum DependencyBody {
+//     String(String),
+// }
+
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct RawConfig {
     pub path: Option<Vec<String>>,
     pub alias: Option<IndexMap<String, AliasBody>>,
     pub env: Option<IndexMap<String, String>>,
+    pub dependencies: Option<IndexMap<String, String>>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -28,6 +35,7 @@ pub struct Config {
     pub path: Vec<String>,
     pub alias: IndexMap<String, String>,
     pub env: IndexMap<String, String>,
+    pub dependencies: IndexMap<String, String>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -63,8 +71,8 @@ impl From<RawConfig> for Config {
         Self {
             path: raw.path.unwrap_or(Vec::new()),
             alias,
-            // alias: raw.alias.unwrap_or(IndexMap::new()),
             env: raw.env.unwrap_or(IndexMap::new()),
+            dependencies: raw.dependencies.unwrap_or(IndexMap::new()),
         }
     }
 }

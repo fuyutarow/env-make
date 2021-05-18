@@ -17,7 +17,7 @@ enum Opt {
     #[structopt(name = "build")]
     Build {
         /// target config file
-        #[structopt(parse(from_os_str))]
+        #[structopt(parse(from_os_str), short, long = "file")]
         fpath: PathBuf,
 
         /// target config file [possible values: nu]
@@ -27,6 +27,16 @@ enum Opt {
         /// [possible values: midi, json]
         #[structopt(short, long)]
         replace: bool,
+    },
+    #[structopt(name = "install")]
+    Install {
+        ///
+        #[structopt()]
+        name: String,
+
+        /// target config file
+        #[structopt(parse(from_os_str), short, long = "file")]
+        fpath: PathBuf,
     },
 }
 
@@ -45,6 +55,36 @@ fn main() {
                 sh.write();
             } else {
                 sh.print();
+            }
+        }
+        Opt::Install { name, fpath } => {
+            let content = std::fs::read_to_string(fpath).expect("Unable to read file");
+            let raw = toml::from_str::<RawConfig>(&content).expect("Failed to parse as toml");
+            let config = Config::from(raw);
+            if let Some(command) = config.dependencies.get(&name) {
+                if let Some((first, args)) = command
+                    .split_whitespace()
+                    .map(String::from)
+                    .collect::<Vec<_>>()
+                    .split_first()
+                {
+                    let mut child = std::process::Command::new(&first)
+                        .args(args)
+                        // .stdout(std::process::Stdio::null())
+                        // .stderr(std::process::Stdio::null())
+                        .spawn()
+                        .expect(&format!("Failed to excuete {}", command));
+
+                    if child
+                        .wait()
+                        .expect(&format!("Failed to excute {}", command))
+                        .success()
+                    {
+                        println!("Success to install {}", command);
+                    }
+                }
+            } else {
+                eprintln!("Not found {}", name)
             }
         }
     }
