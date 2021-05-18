@@ -1,13 +1,25 @@
 use serde_derive::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::fmt::Write as FmtWrite;
 use std::io::Write as IoWrite;
 
 use indexmap::IndexMap;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(untagged)]
+pub enum AliasBody {
+    String(String),
+    AliasComplex {
+        command: String,
+        // dependencies: Option<Vec<String>>,
+        or: Option<String>,
+    },
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct RawConfig {
     pub path: Option<Vec<String>>,
-    pub alias: Option<IndexMap<String, String>>,
+    pub alias: Option<IndexMap<String, AliasBody>>,
     pub env: Option<IndexMap<String, String>>,
 }
 
@@ -27,9 +39,31 @@ pub struct NuConfig {
 
 impl From<RawConfig> for Config {
     fn from(raw: RawConfig) -> Self {
+        let alias = raw
+            .alias
+            .unwrap_or(IndexMap::new())
+            .into_iter()
+            .map(|(name, body)| match body {
+                // AliasBody::Simple(s) => Some((name, s)),
+                // AliasBody::Complex(cc) => None,
+                AliasBody::String(s) => Some((name, s)),
+                AliasBody::AliasComplex {
+                    command,
+                    // dependencies,
+                    or,
+                } => match (command.split_whitespace().collect::<Vec<_>>().first(), or) {
+                    (Some(first), _) if which::which(first).is_ok() => Some((name, command)),
+                    (_, Some(or_command)) => Some((name, or_command)),
+                    _ => None,
+                },
+            })
+            .filter_map(|e| e)
+            .collect::<IndexMap<_, _>>();
+
         Self {
             path: raw.path.unwrap_or(Vec::new()),
-            alias: raw.alias.unwrap_or(IndexMap::new()),
+            alias,
+            // alias: raw.alias.unwrap_or(IndexMap::new()),
             env: raw.env.unwrap_or(IndexMap::new()),
         }
     }

@@ -11,7 +11,7 @@ fn main() {
     let config = Config::from(raw);
     dbg!(&config);
 
-    let nu = NuConfig::from(config);
-    dbg!(&nu);
-    nu.write();
+    // let nu = NuConfig::from(config);
+    // dbg!(&nu);
+    // nu.write();
 }

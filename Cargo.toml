@@ -1,6 +1,6 @@
 [package]
 name = "env-make"
-version = "0.202105.3"
+version = "0.202105.4"
 authors = ["fuyutarow"]
 edition = "2018"
 
@@ -17,3 +17,4 @@ serde = "1.0.125"
 serde_derive = "1.0.125"
 structopt = "0.3.21"
 toml = "0.5.8"
+which = "4.1.0"
