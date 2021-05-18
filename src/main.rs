@@ -44,10 +44,6 @@ enum Opt {
         #[structopt(parse(from_os_str), short, long = "file")]
         fpath: PathBuf,
 
-        /// output file path
-        #[structopt(parse(from_os_str), short)]
-        out: PathBuf,
-
         ///
         #[structopt(short, long)]
         background: bool,
@@ -98,7 +94,6 @@ fn main() {
         Opt::Install {
             name,
             fpath,
-            out,
             background,
         } => {
             let content = std::fs::read_to_string(fpath).expect("Unable to read file");
