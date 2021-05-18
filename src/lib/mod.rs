@@ -45,6 +45,36 @@ pub struct NuConfig {
     pub env: IndexMap<String, String>,
 }
 
+impl Config {
+    pub fn install(&self, name: &str) {
+        if let Some(command) = self.dependencies.get(name) {
+            if let Some((first, args)) = command
+                .split_whitespace()
+                .map(String::from)
+                .collect::<Vec<_>>()
+                .split_first()
+            {
+                let mut child = std::process::Command::new(&first)
+                    .args(args)
+                    // .stdout(std::process::Stdio::null())
+                    // .stderr(std::process::Stdio::null())
+                    .spawn()
+                    .expect(&format!("Failed to excuete {}", command));
+
+                if child
+                    .wait()
+                    .expect(&format!("Failed to excute {}", command))
+                    .success()
+                {
+                    println!("Success to install {}: `{}`", name, command);
+                }
+            }
+        } else {
+            eprintln!("Not found {}", name)
+        }
+    }
+}
+
 impl From<RawConfig> for Config {
     fn from(raw: RawConfig) -> Self {
         let alias = raw
