@@ -48,6 +48,8 @@ enum Opt {
         #[structopt(short, long)]
         background: bool,
     },
+    #[structopt(name = "path")]
+    Path {},
 }
 
 fn main() {
@@ -105,6 +107,18 @@ fn main() {
             } else {
                 config.install(&name)
             }
+        }
+        Opt::Path {} => {
+            let path = {
+                let path = dirs::config_dir()
+                    .unwrap()
+                    .join("env-make")
+                    .join("config.toml");
+                let parent = path.parent().unwrap();
+                std::fs::create_dir_all(parent).unwrap();
+                path
+            };
+            println!("{}", path.to_str().unwrap());
         }
     }
 }
