@@ -1,10 +1,22 @@
 use std::path::{Path, PathBuf};
 
+#[macro_use]
+extern crate lazy_static;
 use parse_display::{Display, FromStr};
 use structopt::StructOpt;
 
 mod lib;
 use lib::{BashConfig, Config, NuConfig, RawConfig, ShConfig};
+
+lazy_static! {
+    static ref CONFIG_PATH: String = dirs::config_dir()
+        .unwrap()
+        .join("env-make")
+        .join("config.toml")
+        .to_str()
+        .unwrap()
+        .to_string();
+}
 
 #[derive(Debug, Display, FromStr)]
 #[display(style = "lowercase")]
@@ -19,7 +31,7 @@ enum Opt {
     #[structopt(name = "build")]
     Build {
         /// target config file
-        #[structopt(parse(from_os_str), short, long = "file")]
+        #[structopt(parse(from_os_str), short, long = "file", default_value=&CONFIG_PATH)]
         fpath: PathBuf,
 
         /// output file path
@@ -36,16 +48,16 @@ enum Opt {
     },
     #[structopt(name = "install")]
     Install {
-        ///
+        /// dependency
         #[structopt()]
-        name: Option<String>,
+        dependency: Option<String>,
 
         /// all
         #[structopt(short, long)]
         all: bool,
 
         /// target config file
-        #[structopt(parse(from_os_str), short, long = "file")]
+        #[structopt(parse(from_os_str), short, long = "file", default_value=&CONFIG_PATH)]
         fpath: PathBuf,
 
         ///
@@ -98,7 +110,7 @@ fn main() {
             };
         }
         Opt::Install {
-            name,
+            dependency,
             all,
             fpath,
             background,
@@ -107,7 +119,7 @@ fn main() {
             let raw = toml::from_str::<RawConfig>(&content).expect("Failed to parse as toml");
             let config = Config::from(raw);
 
-            match (name, all) {
+            match (dependency, all) {
                 (Some(name), _) => {
                     if background {
                         config.install_bg(&name)
@@ -124,20 +136,13 @@ fn main() {
                         };
                     }
                 }
-                _ => {}
+                _ => {
+                    println!("`env-make install` requires args or --all option.")
+                }
             };
         }
         Opt::Path {} => {
-            let path = {
-                let path = dirs::config_dir()
-                    .unwrap()
-                    .join("env-make")
-                    .join("config.toml");
-                let parent = path.parent().unwrap();
-                std::fs::create_dir_all(parent).unwrap();
-                path
-            };
-            println!("{}", path.to_str().unwrap());
+            println!("{}", CONFIG_PATH.to_string());
         }
     }
 }
