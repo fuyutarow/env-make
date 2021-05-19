@@ -29,5 +29,5 @@ env-make install --all
 
 ### `env-make path`
 ```
-vscdoe $(env-make path)
+code "$(env-make path)"
 ```
