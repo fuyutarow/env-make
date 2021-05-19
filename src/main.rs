@@ -38,7 +38,11 @@ enum Opt {
     Install {
         ///
         #[structopt()]
-        name: String,
+        name: Option<String>,
+
+        /// all
+        #[structopt(short, long)]
+        all: bool,
 
         /// target config file
         #[structopt(parse(from_os_str), short, long = "file")]
@@ -95,6 +99,7 @@ fn main() {
         }
         Opt::Install {
             name,
+            all,
             fpath,
             background,
         } => {
@@ -102,11 +107,25 @@ fn main() {
             let raw = toml::from_str::<RawConfig>(&content).expect("Failed to parse as toml");
             let config = Config::from(raw);
 
-            if background {
-                config.install_bg(&name)
-            } else {
-                config.install(&name)
-            }
+            match (name, all) {
+                (Some(name), _) => {
+                    if background {
+                        config.install_bg(&name)
+                    } else {
+                        config.install(&name)
+                    };
+                }
+                (_, true) => {
+                    for name in config.dependencies.keys() {
+                        if background {
+                            config.install_bg(&name)
+                        } else {
+                            config.install(&name)
+                        };
+                    }
+                }
+                _ => {}
+            };
         }
         Opt::Path {} => {
             let path = {
