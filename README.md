@@ -2,9 +2,9 @@
 
 WIP
 
-[x] path
-[x] alias
-[x] env
+- [x] path
+- [x] alias
+- [x] env
 
 ## Installation
 
@@ -16,5 +16,18 @@ brew intall fuyutarow/tap/env-make
 
 ### `env-make build`
 ```
-env-make build -f examples/env.toml --to nu > ~/.config/nu/config.toml
+env-make build --to nu > ~/.config/nu/config.toml
+```
+
+### `env-make install`
+```
+env-make install exa
+```
+```
+env-make install --all
+```
+
+### `env-make path`
+```
+vscdoe $(env-make path)
 ```
