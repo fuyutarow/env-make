@@ -83,9 +83,8 @@ dependencies = [
 
 [[package]]
 name = "dirs"
-version = "3.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "30baa043103c9d0c2a57cf537cc2f35623889dc0d405e6c3cccfadbc81c71309"
+version = "3.1.0"
+source = "git+https://github.com/fuyutarow/dirs-rs#ed3caec28ad8f90f71fd5e69b499bf951f5eb1ed"
 dependencies = [
  "dirs-sys",
 ]

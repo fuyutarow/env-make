@@ -21,7 +21,7 @@ fn touch(path: &Path) -> std::io::Result<()> {
 
 lazy_static! {
     static ref CONFIG_PATH: String = {
-        let path = dirs::config_dir()
+        let path = dirs::settings_dir()
             .unwrap()
             .join("env-make")
             .join("config.toml");
@@ -98,7 +98,7 @@ fn main() {
                     .expect("expected file path")
                     .join(".bashrc"),
                 To::Zsh => dirs::home_dir().expect("expected file path").join(".zshrc"),
-                To::Nu => dirs::config_dir()
+                To::Nu => dirs::settings_dir()
                     .expect("expected file path")
                     .join("nu/config.toml"),
             });
