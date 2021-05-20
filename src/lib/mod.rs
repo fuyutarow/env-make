@@ -84,7 +84,7 @@ impl Config {
                 .collect::<Vec<_>>()
                 .split_first()
             {
-                let mut child = std::process::Command::new(&first)
+                let _child = std::process::Command::new(&first)
                     .args(args)
                     .stdout(std::process::Stdio::null())
                     .stderr(std::process::Stdio::null())

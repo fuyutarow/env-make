@@ -25,7 +25,7 @@ impl From<Config> for BashConfig {
 }
 
 impl BashConfig {
-    fn to_string(&self) -> anyhow::Result<(String)> {
+    fn to_string(&self) -> anyhow::Result<String> {
         let mut s = String::new();
         for (k, v) in self.env.iter() {
             writeln!(&mut s, r#"export {}="{}""#, k, v)?;
