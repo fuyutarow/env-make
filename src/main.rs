@@ -8,14 +8,27 @@ use structopt::StructOpt;
 mod lib;
 use lib::{BashConfig, Config, NuConfig, RawConfig, ShConfig};
 
+fn touch(path: &Path) -> std::io::Result<()> {
+    match std::fs::OpenOptions::new()
+        .create(true)
+        .write(true)
+        .open(path)
+    {
+        Ok(_) => Ok(()),
+        Err(e) => Err(e),
+    }
+}
+
 lazy_static! {
-    static ref CONFIG_PATH: String = dirs::config_dir()
-        .unwrap()
-        .join("env-make")
-        .join("config.toml")
-        .to_str()
-        .unwrap()
-        .to_string();
+    static ref CONFIG_PATH: String = {
+        let path = dirs::config_dir()
+            .unwrap()
+            .join("env-make")
+            .join("config.toml");
+        std::fs::create_dir_all(path.parent().unwrap());
+        touch(&path);
+        path.to_str().unwrap().to_string()
+    };
 }
 
 #[derive(Debug, Display, FromStr)]
