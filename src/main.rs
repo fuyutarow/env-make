@@ -77,6 +77,12 @@ enum Opt {
         #[structopt(short, long)]
         background: bool,
     },
+    #[structopt(name = "config")]
+    Config(ConfigOpts),
+}
+
+#[derive(StructOpt, Debug)]
+pub enum ConfigOpts {
     #[structopt(name = "path")]
     Path {},
 }
@@ -155,8 +161,8 @@ fn main() {
                 }
             };
         }
-        Opt::Path {} => {
-            println!("{}", CONFIG_PATH.to_string());
-        }
+        Opt::Config(opts) => match opts {
+            ConfigOpts::Path {} => println!("{}", CONFIG_PATH.to_string()),
+        },
     }
 }

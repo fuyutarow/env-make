@@ -27,7 +27,7 @@ env-make install exa
 env-make install --all
 ```
 
-### `env-make path`
+### `env-make config path`
 ```
-code "$(env-make path)"
+code "$(env-make config path)"
 ```
