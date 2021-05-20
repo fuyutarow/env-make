@@ -36,7 +36,8 @@ impl From<Config> for NuConfig {
             .into_iter()
             .map(|mut p| {
                 for (k, v) in &env {
-                    p = p.replace(format!("${}", k).as_str(), v.as_str())
+                    let vv = v.replace("$HOME", &home_dir_s);
+                    p = p.replace(format!("${}", k).as_str(), vv.as_str());
                 }
                 p
             })
