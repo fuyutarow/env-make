@@ -82,6 +82,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "directories"
+version = "3.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e69600ff1703123957937708eb27f7a564e48885c537782722ed0ba3189ce1d7"
+dependencies = [
+ "dirs-sys",
+]
+
+[[package]]
 name = "dirs"
 version = "3.1.0"
 source = "git+https://github.com/fuyutarow/dirs-rs#ed3caec28ad8f90f71fd5e69b499bf951f5eb1ed"
@@ -108,10 +117,11 @@ checksum = "e78d4f1cc4ae33bbfc157ed5d5a5ef3bc29227303d595861deb238fcec4e9457"
 
 [[package]]
 name = "env-make"
-version = "0.202105.7"
+version = "0.202105.8"
 dependencies = [
  "anyhow",
  "crossbeam-utils",
+ "directories",
  "dirs",
  "indexmap",
  "lazy_static",

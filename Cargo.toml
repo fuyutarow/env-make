@@ -1,6 +1,6 @@
 [package]
 name = "env-make"
-version = "0.202105.7"
+version = "0.202105.8"
 authors = ["fuyutarow"]
 edition = "2018"
 
@@ -11,6 +11,7 @@ path = 'src/lib/mod.rs'
 [dependencies]
 anyhow = "1.0.40"
 crossbeam-utils = "0.8.4"
+directories = "3.0"
 dirs = { git = "https://github.com/fuyutarow/dirs-rs" }
 indexmap = { version = "1.6.2", features = ["serde"] }
 parse-display = "0.4.1"

@@ -98,9 +98,10 @@ fn main() {
                     .expect("expected file path")
                     .join(".bashrc"),
                 To::Zsh => dirs::home_dir().expect("expected file path").join(".zshrc"),
-                To::Nu => dirs::settings_dir()
+                To::Nu => directories::ProjectDirs::from("org", "nushell", "nu")
                     .expect("expected file path")
-                    .join("nu/config.toml"),
+                    .config_dir()
+                    .join("config.toml"),
             });
 
             match to {
