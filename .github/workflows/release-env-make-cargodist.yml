@@ -58,8 +58,8 @@ jobs:
         if: matrix.os == 'windows-latest'
         id: build_windows
         run: |
-          rustup default nightly
           rustup default stable-x86_64-pc-windows-msvc
+          rustup default nightly
           cargo build --locked --release
           # 7z a env-make-x86_64-pc-windows-msvc.zip target/release/env-make.exe
           mv ./target/release/env-make.exe .
