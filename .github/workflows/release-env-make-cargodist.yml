@@ -9,7 +9,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, macOS-latest]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
         rust: [stable]
 
     runs-on: ${{ matrix.os }}
@@ -28,14 +28,14 @@ jobs:
           rust-version: ${{ matrix.rust }}
       - name: Checkout
         uses: actions/checkout@v1
-      - name: Build for Linux
+      - name: Build for linux
         if: matrix.os == 'ubuntu-latest'
         id: build_linux
         run: |
           BIN_ZIP=./${BIN_NAME}-${VERSION}-x86_64-linux.zip
           rustup target add x86_64-unknown-linux-musl
           sudo apt-get -qq install musl-tools
-          cargo build --locked --release --target=x86_64-unknown-linux-musl
+          cargo build --locked --release --target=x86_64-unknown-linux-musl 
           zip -j ${BIN_ZIP} target/x86_64-unknown-linux-musl/release/${BIN_NAME}
           echo "::set-output name=sha::$(shasum -a 256 ${BIN_ZIP} |awk '{print $1}')"
         env:
@@ -46,20 +46,31 @@ jobs:
         id: build_mac
         run: |
           BIN_ZIP=./${BIN_NAME}-${VERSION}-x86_64-mac.zip
-          cargo build --locked --release --target=x86_64-apple-darwin
+          cargo build --locked --release --target=x86_64-apple-darwin 
           zip -j ${BIN_ZIP} target/x86_64-apple-darwin/release/${BIN_NAME}
           echo "::set-output name=sha::$(shasum -a 256 ${BIN_ZIP} |awk '{print $1}')"
         env:
           BIN_NAME: ${{ steps.set_envs.outputs.bin_name }}
           VERSION: ${{ steps.set_envs.outputs.version }}
+      - name: Build for windows
+        if: matrix.os == 'windows-latest'
+        id: build_windows
+        run: |
+          rustup default stable-x86_64-pc-windows-msvc
+          cargo build --locked --release
+          # 7z a env-make-x86_64-pc-windows-msvc.zip target/release/env-make.exe
+          mv ./target/release/env-make.exe .
+          echo "::set-output name=sha::$(Get-FileHash env-make.exe | Select-Object Hash)"
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          body: "[Changelog](https://github.com/dalance/procs/blob/master/CHANGELOG.md)"
-          files: "*.zip\n*.rpm"
+          files: |
+            *.zip
+            *.rpm
+            *.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Dispatch homebrew Repository update for Linux
+      - name: Dispatch homebrew Repository update for linux
         if: matrix.os == 'ubuntu-latest'
         uses: peter-evans/repository-dispatch@v1
         with:
@@ -85,6 +96,21 @@ jobs:
             {
               "type": "update_sha",
               "os": "mac",
+              "bin_name": "${{ steps.set_envs.outputs.bin_name }}",
+              "version": "${{ steps.set_envs.outputs.version }}",
+              "sha": "${{ steps.build_mac.outputs.sha }}"
+            }
+      - name: Dispatch homebrew Repository update for windows
+        if: matrix.os == 'windows-latest'
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.HOMEBREW_REPO_GITHUB_TOKEN }}
+          repository: fuyutarow/homebrew-tap
+          event-type: update
+          client-payload: |
+            {
+              "type": "update_sha",
+              "os": "windows",
               "bin_name": "${{ steps.set_envs.outputs.bin_name }}",
               "version": "${{ steps.set_envs.outputs.version }}",
               "sha": "${{ steps.build_mac.outputs.sha }}"

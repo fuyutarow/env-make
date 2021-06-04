@@ -1,8 +1,12 @@
 [package]
 name = "env-make"
-version = "0.202105.9"
+version = "0.202106.0"
 authors = ["fuyutarow"]
 edition = "2018"
+description = "A CLI tool for portable alias across shells and OS"
+homepage = "https://github.com/fuyutarow/env-make"
+repository = "https://github.com/fuyutarow/env-make.git"
+license = "MIT"
 
 [lib]
 name = 'cli'
