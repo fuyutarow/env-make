@@ -1,3 +1,5 @@
+#![feature(box_patterns)]
+
 use std::path::{Path, PathBuf};
 
 #[macro_use]

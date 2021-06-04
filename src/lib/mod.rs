@@ -1,3 +1,5 @@
+#![feature(box_patterns)]
+
 use std::path::PathBuf;
 
 use indexmap::IndexMap;
@@ -22,7 +24,65 @@ pub enum AliasBody {
         command: String,
         // dependencies: Option<Vec<String>>,
         or: Option<String>,
+        // #[serde(rename="cfg")]
     },
+    AliasWithCfg {
+        #[serde(rename = "cfg(wsl)")]
+        cfg_wsl: Option<Box<AliasBody>>,
+        #[serde(rename = "cfg(windows)")]
+        cfg_windows: Option<Box<AliasBody>>,
+        #[serde(rename = "cfg(mac)")]
+        cfg_mac: Option<Box<AliasBody>>,
+        #[serde(rename = "cfg(linux)")]
+        cfg_linux: Option<Box<AliasBody>>,
+    },
+}
+
+impl AliasBody {
+    pub fn resolve_cfg(&self) -> Self {
+        let os_type = os_info::get().os_type();
+        match self {
+            Self::String(_) => self.to_owned(),
+            Self::AliasComplex { .. } => self.to_owned(),
+            Self::AliasWithCfg {
+                cfg_wsl: Some(box wsl_alias),
+                cfg_windows: _,
+                cfg_linux: _,
+                cfg_mac: _,
+            } if wsl::is_wsl() => wsl_alias.to_owned(),
+            Self::AliasWithCfg {
+                cfg_wsl: _,
+                cfg_windows: _,
+                cfg_linux: Some(box linxu_alias),
+                cfg_mac: _,
+            } if wsl::is_wsl() => linxu_alias.to_owned(),
+            Self::AliasWithCfg {
+                cfg_wsl: _,
+                cfg_windows: Some(box win_alias),
+                cfg_linux: _,
+                cfg_mac: _,
+            } if wsl::is_wsl() => win_alias.to_owned(),
+            Self::AliasWithCfg {
+                cfg_wsl: _,
+                cfg_windows: Some(box win_alias),
+                cfg_linux: _,
+                cfg_mac: _,
+            } if os_type == os_info::Type::Windows => win_alias.to_owned(),
+            Self::AliasWithCfg {
+                cfg_wsl: _,
+                cfg_windows: _,
+                cfg_linux: _,
+                cfg_mac: Some(box mac_alias),
+            } if os_type == os_info::Type::Windows => mac_alias.to_owned(),
+            Self::AliasWithCfg {
+                cfg_wsl: _,
+                cfg_windows: _,
+                cfg_linux: Some(box linux_alias),
+                cfg_mac: _,
+            } => linux_alias.to_owned(),
+            _ => todo!(),
+        }
+    }
 }
 
 // #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -103,9 +163,7 @@ impl From<RawConfig> for Config {
             .alias
             .unwrap_or(IndexMap::new())
             .into_iter()
-            .map(|(name, body)| match body {
-                // AliasBody::Simple(s) => Some((name, s)),
-                // AliasBody::Complex(cc) => None,
+            .map(|(name, body)| match body.resolve_cfg() {
                 AliasBody::String(s) => Some((name, s)),
                 AliasBody::AliasComplex {
                     command,
@@ -116,6 +174,7 @@ impl From<RawConfig> for Config {
                     (_, Some(or_command)) => Some((name, or_command)),
                     _ => None,
                 },
+                _ => unreachable!(),
             })
             .filter_map(|e| e)
             .collect::<IndexMap<_, _>>();
